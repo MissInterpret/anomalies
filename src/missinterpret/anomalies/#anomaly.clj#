@@ -34,4 +34,3 @@
                            :message  {:readable (str "The data does not conform to the spec: " (s/explain spec data))
                                       :data {:spec spec
                                              :validating data}}})))
- 
