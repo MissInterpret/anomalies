@@ -20,7 +20,7 @@
   (sling/throw+ {:type type
                  :anomaly/category category
                  :anomaly/from     from
-                 :amnomly/when     (java.time.Instant/now))
+                 :amnomly/when     (java.time.Instant/now)
                  :anomaly/message  message}))
 
 (defn validate
