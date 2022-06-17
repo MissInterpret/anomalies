@@ -37,12 +37,12 @@
                                              :validating data}}})))
 
 
+
 (defn throw-if-cognitect-anomaly
   "If this conforms to a cognitect anomaly wrap and throw it, otherwise
    pass it through."
   [i]
-  (if (s/valid? :cognitect.anomalies/anomaly i)
-    i
+  (when (s/valid? :cognitect.anomalies/anomaly i)
     (let [cat (->> (:cognitect.anomalies/category i)
                   name
                   (keyword "anomaly.category"))]
@@ -51,4 +51,5 @@
         {:from ::throw-if-cognitect-anomaly
          :category cat
          :message {:readable (str "Cognitect anomaly: " (:cognitect.anomalies/category i))
-                   :anomaly i}}))))
+                   :anomaly i}})))
+  i)
