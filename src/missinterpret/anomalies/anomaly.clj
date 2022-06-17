@@ -1,6 +1,7 @@
 (ns missinterpret.anomalies.anomaly
   (:require  [clojure.spec.alpha :as s]
-             [slingshot.slingshot :as sling]))
+             [slingshot.slingshot :as sling]
+             [cognitect.anomalies]))
 
 (defonce categories #{:anomaly.category/unavailable
                       :anomaly.category/interrupted
@@ -34,3 +35,20 @@
                            :message  {:readable (str "The data does not conform to the spec: " (s/explain spec data))
                                       :data {:spec spec
                                              :validating data}}})))
+
+
+(defn throw-if-cognitect-anomaly
+  "If this conforms to a cognitect anomaly wrap and throw it, otherwise
+   pass it through."
+  [i]
+  (if (s/valid? :cognitect.anomalies/anomaly i)
+    i
+    (let [cat (->> (:cognitect.anomalies/category i)
+                  name
+                  (keyword "anomaly.category"))]
+      (throw+
+        :cognitect-anomaly
+        {:from ::throw-if-cognitect-anomaly
+         :category cat
+         :message {:readable (str "Cognitect anomaly: " (:cognitect.anomalies/category i))
+                   :anomaly i}}))))

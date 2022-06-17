@@ -1,10 +1,11 @@
 {:deps
  {org.clojure/clojure                 {:mvn/version "1.11.1"}
+  com.cognitect/anomalies             {:mvn/version "0.1.12"}
   slingshot/slingshot                 {:mvn/version "0.12.2"}}
 
  :paths ["src"]
 
  :aliases
  {:uberjar {:extra-deps {uberdeps/uberdeps {:mvn/version "0.1.4"}}
-            :main-opts ["-m" "uberdeps.uberjar" "--target" "target/anomalies-0.1.2.jar"]}}
+            :main-opts ["-m" "uberdeps.uberjar" "--target" "target/anomalies-0.1.3.jar"]}}
 }
