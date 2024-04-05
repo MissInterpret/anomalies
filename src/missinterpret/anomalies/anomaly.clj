@@ -5,6 +5,7 @@
             [cognitect.anomalies])
   (:import (java.time Instant)))
 
+;; Duplicate of categories from Cognitect Anomalies
 (defonce categories #{:anomaly.category/unavailable
                       :anomaly.category/interrupted
                       :anomaly.category/incorrect
@@ -14,6 +15,7 @@
                       :anomaly.category/conflict
                       :anomaly.category/fault
                       :anomaly.category/busy})
+
 
 (defn anomaly
   ([from category]
@@ -37,9 +39,9 @@
 
 
 (defn throw+
-  "Throws a slingshot exeception with a given type
-   and an associated ex package that includes a
-   map that conforms to the flow anomalies spec."
+  "Throws a slingshot Exception with a given type
+   and an associated ex-info package that includes a
+   map which conforms to the anomaly specification."
   [type {:keys [from category message]}]
   (sling/throw+
     (->  (anomaly from category message)
@@ -48,7 +50,7 @@
 
 (defn throw-if-cognitect-anomaly
   "If this conforms to a cognitect anomaly wrap and throw it, otherwise
-   pass it through."
+   it is passed through."
   [x]
   (when (s/valid? :cognitect.anomalies/anomaly x)
     (let [cat (->> (:cognitect.anomalies/category x)
@@ -80,6 +82,8 @@
 
 (defn wrap-exception
   ([ex]
+   "Transforms an Exception (with or without ex-data) into one with ex-info that
+    contains an anomaly."
    (wrap-exception ex nil))
   ([ex anomaly]
    (let [ex-data (ex-data ex)]
