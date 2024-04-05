@@ -1,8 +1,9 @@
 (ns missinterpret.anomalies.anomaly
-  (:require  [clojure.spec.alpha :as s]
-             [missinterpret.anomalies.anomaly-spec]
-             [slingshot.slingshot :as sling]
-             [cognitect.anomalies]))
+  (:require [clojure.spec.alpha :as s]
+            [missinterpret.anomalies.anomaly-spec]
+            [slingshot.slingshot :as sling]
+            [cognitect.anomalies])
+  (:import (java.time Instant)))
 
 (defonce categories #{:anomaly.category/unavailable
                       :anomaly.category/interrupted
@@ -20,7 +21,7 @@
   ([from category message]
    (cond-> {:anomaly/from     from
             :anomaly/category category
-            :anomaly/when     (java.time.Instant/now)}
+            :anomaly/when     (Instant/now)}
            (some? message) (assoc :anomaly/message message))))
 
 
@@ -58,6 +59,7 @@
         {:from ::throw-if-cognitect-anomaly
          :category cat
          :message {:readable (str "Cognitect anomaly: " (:cognitect.anomalies/category x))
+                   :reason :cognitect-anomaly
                    :anomaly x}})))
   x)
 
@@ -71,6 +73,7 @@
     (throw+ :invalid-spec {:from     ::validate
                            :category :anomaly.category/incorrect
                            :message  {:readable (str "The data does not conform to the spec: " (s/explain spec data))
+                                      :reason :spec-failure
                                       :data {:spec spec
                                              :validating data}}})))
 
@@ -87,13 +90,13 @@
                                :anomaly/when
                                :anomaly/message])
 
-         (anomaly? anomaly)
-         anomaly
+         (anomaly? anomaly) anomaly
 
          :else
          {:anomaly/category :anomaly.category/fault
           :anomaly/from     ::exception
-          :anomaly/when     (java.time.Instant/now)
+          :anomaly/when     (Instant/now)
           :anomaly/message  {:readable (str "Unhandled exception: " (.getMessage ex))
+                             :reason :anomaly/exception
                              :data  {:ex ex}}}))))
 
