@@ -5,6 +5,9 @@
             [missinterpret.anomalies.anomaly :as anom]
             [missinterpret.anomalies.anomaly-spec]))
 
+;; copyright (c) 2024 Creative Commons BY 4.0 Deed
+
+
 (def anomaly (gen/generate (s/gen :anomalies/anomaly)))
 
 (deftest anomaly-create

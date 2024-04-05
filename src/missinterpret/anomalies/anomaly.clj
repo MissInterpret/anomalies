@@ -5,6 +5,8 @@
             [cognitect.anomalies])
   (:import (java.time Instant)))
 
+;; copyright (c) 2024 Creative Commons BY 4.0 Deed
+
 ;; Duplicate of categories from Cognitect Anomalies
 (defonce categories #{:anomaly.category/unavailable
                       :anomaly.category/interrupted
