@@ -64,6 +64,12 @@
     (let [data (try
                  (throw (Exception. "my exception message"))
                  (catch Exception ex (anom/wrap-exception ex)))]
+      (is (anom/anomaly? data))))
+  (testing "Exception only; from passed as second argument"
+    (let [data (try
+                 (throw (Exception. "my exception message"))
+                 (catch Exception ex (anom/wrap-exception ex ::test)))]
+      (is (= ::test (:anomaly/from data)))
       (is (anom/anomaly? data)))))
 
 

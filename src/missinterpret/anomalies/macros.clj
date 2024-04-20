@@ -95,6 +95,7 @@
                       :msg ~'msg
                       :arguments (unpack-args ~args)}})))))))
 
+;; NOTE: Any future macros that do not rely on this macro need to come *before*
 (defmacro defn [& args]
   (let [{:keys [name] :as conf} (s/conform ::spec/defn-args args)
         new-conf (update-body conf (partial wrap-try (str name)))

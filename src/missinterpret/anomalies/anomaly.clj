@@ -84,25 +84,28 @@
 
 (defn wrap-exception
   ([ex]
-   "Transforms an Exception (with or without ex-data) into one with ex-info that
-    contains an anomaly."
+   "Transforms an Exception (with or without ex-data) into an anomaly using:
+     1. ex-info that contains the keys for an anomaly.
+     2. A passed anomaly
+     3. Constructs an anomaly out of the exception
+        (if second arg is a keyword it is used as the `:from` in generated anomaly)"
    (wrap-exception ex nil))
   ([ex anomaly]
    (let [ex-data (ex-data ex)]
-       (cond
-         (contains? ex-data)
-         (select-keys ex-data [:anomaly/category
-                               :anomaly/from
-                               :anomaly/when
-                               :anomaly/message])
+     (cond
+       (contains? ex-data)
+       (select-keys ex-data [:anomaly/category
+                             :anomaly/from
+                             :anomaly/when
+                             :anomaly/message])
 
-         (anomaly? anomaly) anomaly
+       (anomaly? anomaly) anomaly
 
-         :else
-         {:anomaly/category :anomaly.category/fault
-          :anomaly/from     ::exception
-          :anomaly/when     (Instant/now)
-          :anomaly/message  {:readable (str "Unhandled exception: " (.getMessage ex))
-                             :reason :anomaly/exception
-                             :data  {:ex ex}}}))))
+       :else
+       {:anomaly/category :anomaly.category/fault
+        :anomaly/from     (if (keyword? anomaly) anomaly ::exception)
+        :anomaly/when     (Instant/now)
+        :anomaly/message  {:readable (str "Unhandled exception: " (.getMessage ex))
+                           :reasons  [:exception]
+                           :data     {:exception ex}}}))))
 
