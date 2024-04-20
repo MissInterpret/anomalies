@@ -32,7 +32,6 @@
 (deftest anomaly-throw+
   (is (thrown?  clojure.lang.ExceptionInfo
                 (anom/throw+
-                  ::test
                   {:from ::here
                    :category :anomaly.category/fault
                    :message  "test"}))))
@@ -49,7 +48,6 @@
   (testing "ex-data is anomaly"
     (let [data (try
                  (anom/throw+
-                   :invalid-test
                    {:from     ::test
                     :category :anomaly.category/invalid
                     :message  {}})

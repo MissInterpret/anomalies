@@ -44,10 +44,10 @@
   "Throws a slingshot Exception with a given type
    and an associated ex-info package that includes a
    map which conforms to the anomaly specification."
-  [type {:keys [from category message]}]
+  [{:keys [from category message]}]
   (sling/throw+
     (->  (anomaly from category message)
-         (assoc :type type))))
+         (assoc :type :anomaly))))
 
 
 (defn throw-if-cognitect-anomaly
@@ -59,12 +59,11 @@
                    name
                    (keyword "anomaly.category"))]
       (throw+
-        :cognitect-anomaly
-        {:from ::throw-if-cognitect-anomaly
+        {:from     ::throw-if-cognitect-anomaly
          :category cat
-         :message {:readable (str "Cognitect anomaly: " (:cognitect.anomalies/category x))
-                   :reason :cognitect-anomaly
-                   :anomaly x}})))
+         :message  {:readable (str "Cognitect anomaly: " (:cognitect.anomalies/category x))
+                    :reasons [:cognitect-anomaly]
+                    :anomaly x}})))
   x)
 
 
@@ -74,12 +73,11 @@
   [spec data]
   (if (s/valid? spec data)
     data
-    (throw+ :invalid-spec {:from     ::validate
-                           :category :anomaly.category/incorrect
-                           :message  {:readable (str "The data does not conform to the spec: " (s/explain spec data))
-                                      :reason :spec-failure
-                                      :data {:spec spec
-                                             :validating data}}})))
+    (throw+ {:from     ::validate
+             :category :anomaly.category/incorrect
+             :message  {:readable (str "The data does not conform to the spec: " (s/explain spec data))
+                        :reasons  [:spec/invalid]
+                        :data     {:spec spec :validating data}}})))
 
 
 (defn wrap-exception
