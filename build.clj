@@ -20,15 +20,15 @@
   opts)
 
 (defn- pom-template [version]
-  [[:description "FIXME: my new library."]
+  [[:description "Extended version of Cognitect Anomalies for Clojure"]
    [:url "https://github.com/missinterpret/anomalies"]
    [:licenses
     [:license
-     [:name "Eclipse Public License"]
-     [:url "http://www.eclipse.org/legal/epl-v10.html"]]]
+     [:name "Creative Commons"]
+     [:url "https://creativecommons.org/licenses/by/4.0/"]]]
    [:developers
     [:developer
-     [:name "Gateway"]]]
+     [:name "George Kierstein"]]]
    [:scm
     [:url "https://github.com/missinterpret/anomalies"]
     [:connection "scm:git:https://github.com/missinterpret/anomalies.git"]
