@@ -33,7 +33,7 @@
     [:url "https://github.com/missinterpret/anomalies"]
     [:connection "scm:git:https://github.com/missinterpret/anomalies.git"]
     [:developerConnection "scm:git:ssh:git@github.com:missinterpret/anomalies.git"]
-    [:tag (str "v" version)]]])
+    [:tag (str "v1.0.1" version)]]])
 
 (defn- jar-opts [opts]
   (assoc opts

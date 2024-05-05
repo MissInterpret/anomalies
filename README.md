@@ -10,11 +10,11 @@ This lightweight library provides:
 
 [Leiningen](https://github.com/technomancy/leiningen) dependency information:
 
-    [io.github.missinterpret/anomalies "1.0.0"]
+    [io.github.missinterpret/anomalies "1.0.1"]
 
 [Deps]() dependency information: 
 
-    io.github.missinterpret/anomalies {:mvn/version "1.0.0"}
+    io.github.missinterpret/anomalies {:mvn/version "1.0.1"}
 
 # Developer Information
 
