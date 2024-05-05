@@ -20,7 +20,11 @@
   (testing "No message"
     (is (anom/anomaly? (anom/anomaly ::test1 :anomaly.category/unavailable))))
   (testing "With message"
-    (is (anom/anomaly? (anom/anomaly ::test2 :anomaly.category/unavailable {:test :A})))))
+    (is (anom/anomaly? (anom/anomaly ::test2 :anomaly.category/unavailable {:test :A}))))
+  (testing "Map form"
+    (is (anom/anomaly? (anom/anomaly {:from     ::here
+                                      :category :anomaly.category/invalid
+                                      :message "test"})))))
 
 (deftest contains-anomaly
   (testing "True"
