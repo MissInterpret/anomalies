@@ -20,6 +20,8 @@
 
 
 (defn anomaly
+  ([{:keys [from category message]}]
+   (anomaly from category message))
   ([from category]
    (anomaly from category nil))
   ([from category message]
