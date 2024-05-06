@@ -46,10 +46,12 @@
   "Throws a slingshot Exception with a given type
    and an associated ex-info package that includes a
    map which conforms to the anomaly specification."
-  [{:keys [from category message]}]
-  (sling/throw+
-    (->  (anomaly from category message)
-         (assoc :type :anomaly))))
+  [{:keys [from category message] :as arg}]
+  (let [a (if (anomaly? arg)
+            (-> arg (assoc :type :anomaly))
+            (->  (anomaly from category message)
+                 (assoc :type :anomaly)))]
+    (sling/throw+ a)))
 
 
 (defn throw-if-cognitect-anomaly

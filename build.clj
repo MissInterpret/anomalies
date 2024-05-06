@@ -4,7 +4,7 @@
             [deps-deploy.deps-deploy :as dd]))
 
 (def lib 'io.github.missinterpret/anomalies)
-(def version "1.0.1")
+(def version "1.0.2")
 #_ ; alternatively, use MAJOR.MINOR.COMMITS:
 (def version (format "1.0.%s" (b/git-count-revs nil)))
 (def class-dir "target/classes")
@@ -33,7 +33,7 @@
     [:url "https://github.com/missinterpret/anomalies"]
     [:connection "scm:git:https://github.com/missinterpret/anomalies.git"]
     [:developerConnection "scm:git:ssh:git@github.com:missinterpret/anomalies.git"]
-    [:tag (str "v1.0.1" version)]]])
+    [:tag (str "v1.0.2" version)]]])
 
 (defn- jar-opts [opts]
   (assoc opts
