@@ -34,11 +34,18 @@
           (assoc (anom/anomaly ::here :anomaly.category/unavailable) :test :test)))))
 
 (deftest anomaly-throw+
-  (is (thrown?  clojure.lang.ExceptionInfo
-                (anom/throw+
-                  {:from ::here
-                   :category :anomaly.category/fault
-                   :message  "test"}))))
+  (testing "From map"
+    (is (thrown?  clojure.lang.ExceptionInfo
+                  (anom/throw+
+                    {:from ::here
+                     :category :anomaly.category/fault
+                     :message  "test"}))))
+  (testing "From anomaly"
+    (is (thrown?  clojure.lang.ExceptionInfo
+                  (anom/throw+
+                    (anom/anomaly {:from ::here
+                                   :category :anomaly.category/fault
+                                   :message  "test"}))))))
 
 (deftest throw-if-cognitect-anomaly
   (is (thrown?
