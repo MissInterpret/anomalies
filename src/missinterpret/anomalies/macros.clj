@@ -95,9 +95,36 @@
                       :msg ~'msg
                       :arguments (unpack-args ~args)}})))))))
 
+;; TODO: Add let, if-let, when-let/when-let* that do anomaly checks
+
+(defmacro when-let*
+  ([bindings & body]
+   (if (seq bindings)
+     ;; TODO: Figure out how to wrap the second binding with an anomaly check
+     ;;       that returns nil
+     `(when-let [~(first bindings) ~(second bindings)]
+        (when-let* ~(drop 2 bindings) ~@body))
+     `(do ~@body))))
+
+(defmacro if-let*
+  ([bindings & body]
+   (if (seq bindings)
+     ;; TODO: Figure out how to wrap the second binding with an anomaly check
+     ;;       that returns nil
+     `(if-let [~(first bindings) ~(second bindings)]
+        (if-let* ~(drop 2 bindings) ~@body))
+     `(do ~@body))))
+
+(defmacro if-let
+  [bindings & body]
+  )
+
+
+
 ;; NOTE: Any future macros that do not rely on this macro need to come *before*
 (defmacro defn [& args]
   (let [{:keys [name] :as conf} (s/conform ::spec/defn-args args)
         new-conf (update-body conf (partial wrap-try (str name)))
         new-args (s/unform ::spec/defn-args new-conf)]
     (cons `clojure.core/defn new-args)))
+
