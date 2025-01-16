@@ -12,46 +12,6 @@
 
 ;; https://www.codementor.io/@yehonathansharvit/how-to-write-custom-defn-macros-with-clojure-spec-supk887tw
 
-
-;; Format of spec conform with changes from defn-spec
-;;
-;; Single Arity
-;; {:name bar,
-;;  :docstring "bar function",
-;;  :meta {:private true},
-;;  :bs [:arity-1
-;;       {:args {},
-;;        :body [:body [(+ 1 2)]]}]}
-;;
-;; Multiple Arity
-;; {:name bar,
-;;  :docstring "bar function",
-;;  :meta {:private true},
-;;  :bs [:arity-n
-;;        {:bodies
-;;          [{:args {},
-;;            :body [:body [(+ 1 2)]]}
-;;
-;;        {:args {:args [[:sym a] [:sym b]]},
-;;          :body [:body [(+ a b)]]}]}]}
-;;
-(defn update-body [{:keys [bs]:as conf} body-update-fn]
-  (cond
-    (= (first bs) :arity-1)
-    (let [body-location [:bs 1 :body 1]
-          args (get-in conf [:bs 1 :args])]
-      (update-in conf body-location (partial body-update-fn args)))
-
-    (= (first bs) :arity-n)
-    (let [bodies (get-in conf [:bs 1 :bodies]),
-          new-bodies
-          (mapv (fn [body]
-                  (let [body-location [:body 1]
-                        args (:args body)]
-                    (update-in body body-location (partial body-update-fn args))))
-                bodies)]
-      (assoc-in conf [:bs 1 :bodies] new-bodies))))
-
 (defn argument-valid? [a]
   (not (anom/anomaly? a)))
 
@@ -95,18 +55,21 @@
                       :msg ~'msg
                       :arguments (unpack-args ~args)}})))))))
 
-;; TODO: Add let, if-let, when-let/when-let* that do anomaly checks
+(defmacro let*
+  [bindings body]
+  (assert (vector? bindings) "a vector for its binding")
+  (assert (= 2 (count bindings)) "exactly 2 forms in binding vector")
+  #_(assert-args
+    (vector? bindings) "a vector for its binding"
+    (= 2 (count bindings)) "exactly 2 forms in binding vector")
+  (let [form (bindings 0) result (bindings 1)]
+    `(let [temp# ~result]
+       (if (anom/anomaly? temp#)
+         temp#
+         (let [~form temp#]
+           ~@body)))))
 
-(defmacro when-let*
-  ([bindings & body]
-   (if (seq bindings)
-     ;; TODO: Figure out how to wrap the second binding with an anomaly check
-     ;;       that returns nil
-     `(when-let [~(first bindings) ~(second bindings)]
-        (when-let* ~(drop 2 bindings) ~@body))
-     `(do ~@body))))
-
-(defmacro if-let*
+#_(defmacro if-let*
   ([bindings & body]
    (if (seq bindings)
      ;; TODO: Figure out how to wrap the second binding with an anomaly check
@@ -115,11 +78,45 @@
         (if-let* ~(drop 2 bindings) ~@body))
      `(do ~@body))))
 
-(defmacro if-let
-  [bindings & body]
-  )
 
+;; Format of spec conform with changes from defn-spec
+;;
+;; Single Arity
+;; {:name bar,
+;;  :docstring "bar function",
+;;  :meta {:private true},
+;;  :bs [:arity-1
+;;       {:args {},
+;;        :body [:body [(+ 1 2)]]}]}
+;;
+;; Multiple Arity
+;; {:name bar,
+;;  :docstring "bar function",
+;;  :meta {:private true},
+;;  :bs [:arity-n
+;;        {:bodies
+;;          [{:args {},
+;;            :body [:body [(+ 1 2)]]}
+;;
+;;        {:args {:args [[:sym a] [:sym b]]},
+;;          :body [:body [(+ a b)]]}]}]}
+;;
+(defn update-body [{:keys [bs]:as conf} body-update-fn]
+      (cond
+        (= (first bs) :arity-1)
+        (let [body-location [:bs 1 :body 1]
+              args (get-in conf [:bs 1 :args])]
+          (update-in conf body-location (partial body-update-fn args)))
 
+        (= (first bs) :arity-n)
+        (let [bodies (get-in conf [:bs 1 :bodies]),
+              new-bodies
+              (mapv (fn [body]
+                      (let [body-location [:body 1]
+                            args (:args body)]
+                        (update-in body body-location (partial body-update-fn args))))
+                    bodies)]
+          (assoc-in conf [:bs 1 :bodies] new-bodies))))
 
 ;; NOTE: Any future macros that do not rely on this macro need to come *before*
 (defmacro defn [& args]
