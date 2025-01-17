@@ -5,6 +5,7 @@ This lightweight library provides:
 
 - An expanded specification with additional attributes useful for improved error tracing
 - Affordances for exceptions useful for standardizing reporting and programmatic handling 
+- Macros that enable 'pipelining' of anomalies to avoid requiring explicit checks 
 
 ## Using missinterpret.anomalies
 

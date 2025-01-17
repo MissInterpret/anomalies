@@ -55,27 +55,29 @@
                       :msg ~'msg
                       :arguments (unpack-args ~args)}})))))))
 
-(defmacro let*
-  [bindings body]
+
+(defmacro if-let+
+  "bindings => binding-form test
+   When test is an anomaly returns the anomaly, otherwise evaluates body with binding-form bound
+   to the value of test."
+  [bindings & body]
   (assert (vector? bindings) "a vector for its binding")
   (assert (= 2 (count bindings)) "exactly 2 forms in binding vector")
-  #_(assert-args
-    (vector? bindings) "a vector for its binding"
-    (= 2 (count bindings)) "exactly 2 forms in binding vector")
-  (let [form (bindings 0) result (bindings 1)]
-    `(let [temp# ~result]
-       (if (anom/anomaly? temp#)
-         temp#
+  (let [form (bindings 0) tst (bindings 1)]
+    `(let [temp# ~tst]
+       (if-not (anom/anomaly? temp#)
          (let [~form temp#]
-           ~@body)))))
+           ~@body)
+         temp#))))
 
-#_(defmacro if-let*
+
+(defmacro let+
+  "If any of the bindings returns an anomaly during binding the anomaly
+   is returned. Otherwise, evaluates body with all binding forms bound."
   ([bindings & body]
    (if (seq bindings)
-     ;; TODO: Figure out how to wrap the second binding with an anomaly check
-     ;;       that returns nil
-     `(if-let [~(first bindings) ~(second bindings)]
-        (if-let* ~(drop 2 bindings) ~@body))
+     `(if-let+ [~(first bindings) ~(second bindings)]
+        (let+ ~(drop 2 bindings) ~@body))
      `(do ~@body))))
 
 
