@@ -1,8 +1,8 @@
 (ns missinterpret.anomalies.anomaly
   (:require [clojure.spec.alpha :as s]
-            [clojure.instant :as inst]
             [missinterpret.anomalies.anomaly-spec]
             [slingshot.slingshot :as sling]
+            [tick.core :as t]
             [cognitect.anomalies])
   (:import (java.time Instant)))
 
@@ -28,7 +28,7 @@
   ([from category message]
    (cond-> {:anomaly/from     from
             :anomaly/category category
-            :anomaly/when     (-> (Instant/now) str clojure.instant/read-instant-timestamp)}
+            :anomaly/when     (t/instant)}
            (some? message) (assoc :anomaly/message message))))
 
 
